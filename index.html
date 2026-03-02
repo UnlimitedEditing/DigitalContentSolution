@@ -29,30 +29,17 @@
 
   /* ─── NOISE OVERLAY ─── */
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content: ''; position: fixed; inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-    opacity: 0.035;
-    pointer-events: none;
-    z-index: 9999;
+    opacity: 0.035; pointer-events: none; z-index: 9999;
   }
 
   /* ─── CHROMATIC & GLITCH TEXT ─── */
-  .chroma {
-    position: relative;
-    display: inline-block;
-  }
+  .chroma { position: relative; display: inline-block; }
   .chroma::before, .chroma::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    filter: url(#text-glitch);
-    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s;
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; filter: url(#text-glitch); transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.7s;
   }
-  
   .chroma::before { color: rgba(255, 30, 30, 0.7); mix-blend-mode: screen; }
   .chroma::after { color: rgba(30, 200, 255, 0.7); mix-blend-mode: screen; }
 
@@ -61,31 +48,16 @@
   .chroma.glitch-in::before  { transform: translate(-3px, 0) scaleX(1); opacity: 1; }
   .chroma.glitch-in::after   { transform: translate(3px, 0) scaleX(1); opacity: 1; }
 
-  /* Quick glitch flash for interactions */
-  .glitch-flash {
-    filter: url(#text-glitch);
-    transform: translateX(4px);
-  }
+  .glitch-flash { filter: url(#text-glitch); transform: translateX(4px); }
 
   /* ─── NAV ─── */
   nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.4rem 3rem;
-    border-bottom: 1px solid var(--border);
-    background: rgba(5,5,5,0.92);
-    backdrop-filter: blur(12px);
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center;
+    justify-content: space-between; padding: 1.4rem 3rem; border-bottom: 1px solid var(--border);
+    background: rgba(5,5,5,0.92); backdrop-filter: blur(12px);
   }
-
   .nav-logo { display: flex; align-items: center; gap: 1rem; }
-  .nav-logo img {
-    width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-    filter: contrast(1.1); border: 1px solid rgba(255,255,255,0.15);
-  }
+  .nav-logo img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; filter: contrast(1.1); border: 1px solid rgba(255,255,255,0.15); }
   .nav-logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: 0.18em; color: var(--white); }
   .nav-links { display: flex; gap: 2.5rem; list-style: none; }
   .nav-links a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; color: var(--dim); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
@@ -96,11 +68,16 @@
     min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; padding: 8rem 2rem 4rem; position: relative; overflow: hidden;
   }
-
-  #iris-ring {
-    position: absolute; top: 50%; left: 50%; width: 0; height: 0;
-    z-index: 1; will-change: transform, opacity;
+  
+  #iris-ring { position: absolute; top: 50%; left: 50%; width: 0; height: 0; z-index: 1; will-change: transform, opacity; }
+  
+  /* The spinning container for the loading bar effect */
+  #iris-spin-container {
+    position: absolute; inset: 0;
+    animation: spinRing 30s linear infinite;
   }
+
+  @keyframes spinRing { 100% { transform: rotate(360deg); } }
 
   .iris-line {
     position: absolute; top: -30px; left: -1px; width: 2px; height: 60px;
@@ -108,37 +85,22 @@
     border-radius: 50%; transform-origin: center center; opacity: 0;
   }
 
+  /* Uses a custom property mapped in JS to create the static peak tail */
   @keyframes popLine {
     0% { opacity: 0; transform: rotate(var(--rot)) translateY(-40px) scaleY(0.2); }
-    100% { opacity: 1; transform: rotate(var(--rot)) translateY(-160px) scaleY(1); }
-  }
-
-  @keyframes breatheLine {
-    0% { transform: rotate(var(--rot)) translateY(-160px) scaleY(1); opacity: 1; }
-    100% { transform: rotate(var(--rot)) translateY(-155px) scaleY(var(--breathe-scale)); opacity: 0.5; }
+    100% { opacity: 1; transform: rotate(var(--rot)) translateY(-160px) scaleY(var(--final-scale)); }
   }
 
   /* ─── LOGO & SHEEN MASK ─── */
-  .hero-logo-wrap {
-    position: relative; width: 220px; height: 220px; margin-bottom: 2.5rem; z-index: 2;
-  }
-
-  .base-logo {
-    width: 100%; height: 100%; object-fit: contain; opacity: 0;
-    animation: popInLogo 1s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  }
-
-  @keyframes popInLogo {
-    0% { opacity: 0; transform: scale(0.6); }
-    100% { opacity: 1; transform: scale(1); }
-  }
+  .hero-logo-wrap { position: relative; width: 220px; height: 220px; margin-bottom: 2.5rem; z-index: 2; }
+  .base-logo { width: 100%; height: 100%; object-fit: contain; opacity: 0; animation: popInLogo 1s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  @keyframes popInLogo { 0% { opacity: 0; transform: scale(0.6); } 100% { opacity: 1; transform: scale(1); } }
 
   .sheen-layer {
     position: absolute; inset: 0; pointer-events: none; overflow: hidden;
     -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center;
     mask-size: contain; mask-repeat: no-repeat; mask-position: center;
   }
-
   .sheen-bar {
     position: absolute; top: -50%; left: -150%; width: 100%; height: 200%;
     background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
@@ -151,16 +113,13 @@
   .hero-sub { font-family: 'DM Mono', monospace; font-size: 0.82rem; letter-spacing: 0.08em; color: var(--dim); max-width: 480px; line-height: 1.8; margin-top: 1.6rem; z-index: 2; animation: fadeslideup 1s 0.5s ease both; }
   .hero-cta-row { display: flex; gap: 1rem; margin-top: 3rem; z-index: 2; flex-wrap: wrap; justify-content: center; animation: fadeslideup 1s 0.65s ease both; }
 
-  @keyframes fadeslideup {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeslideup { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
   .btn {
-    display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.8rem;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
-    text-decoration: none; border: 1px solid rgba(255,255,255,0.22); background: transparent; color: var(--white);
-    cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.8rem; font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; border: 1px solid rgba(255,255,255,0.22);
+    background: transparent; color: var(--white); cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
   }
   .btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.04); opacity: 0; transition: opacity 0.2s; }
   .btn:hover::after { opacity: 1; }
@@ -175,29 +134,30 @@
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: 0.06em; line-height: 1; margin-bottom: 3.5rem; color: var(--white); }
   .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
 
-  /* ─── PRICING CARDS & RGB BORDERS ─── */
-  .pricing-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
-  }
+  /* ─── PRICING CARDS & ORGANIC RGB BORDERS ─── */
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
 
   .pricing-card {
-    background: var(--black); padding: 2.5rem; position: relative;
-    border: 1px solid var(--border); transition: background 0.25s, transform 0.2s;
-    z-index: 1;
+    background: var(--black); padding: 2.5rem; position: relative; border: 1px solid var(--border);
+    transition: background 0.25s, transform 0.2s; z-index: 1;
   }
   .pricing-card:hover { background: rgba(255,255,255,0.03); transform: translateY(-4px); }
 
-  .pricing-card::before, .pricing-card::after {
-    content: ''; position: absolute; inset: -1px; z-index: -1; pointer-events: none;
-    filter: url(#border-jiggle);
-  }
-  .pricing-card::before { border: 1px solid rgba(255, 30, 30, 0.6); animation: rgbBreathe 4s infinite alternate ease-in-out; }
-  .pricing-card::after { border: 1px solid rgba(30, 200, 255, 0.6); animation: rgbBreathe 3.5s infinite alternate-reverse ease-in-out; }
+  .pricing-card::before, .pricing-card::after { content: ''; position: absolute; inset: -1px; z-index: -1; pointer-events: none; filter: url(#border-jiggle); }
+  
+  /* Extended, decoupled breath durations for organic wandering */
+  .pricing-card::before { border: 1px solid rgba(255, 30, 30, 0.6); animation: rgbBreathe 13s infinite alternate ease-in-out; }
+  .pricing-card::after { border: 1px solid rgba(30, 200, 255, 0.6); animation: rgbBreathe 17s infinite alternate-reverse ease-in-out; }
 
-  @keyframes rgbBreathe {
-    0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
-    100% { transform: scale(1.03) translate(-2px, 2px); opacity: 0.8; }
-  }
+  /* Desync the blocks so they don't pulse at the same time */
+  .pricing-card:nth-child(1)::before { animation-delay: -2s; }
+  .pricing-card:nth-child(2)::before { animation-delay: -7s; }
+  .pricing-card:nth-child(3)::before { animation-delay: -11s; }
+  .pricing-card:nth-child(1)::after { animation-delay: -4s; }
+  .pricing-card:nth-child(2)::after { animation-delay: -9s; }
+  .pricing-card:nth-child(3)::after { animation-delay: -1s; }
+
+  @keyframes rgbBreathe { 0% { transform: scale(1) translate(0, 0); opacity: 0.3; } 100% { transform: scale(1.03) translate(-2px, 2px); opacity: 0.8; } }
 
   .card-tag { font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim); margin-bottom: 1.2rem; display: block; }
   .card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em; margin-bottom: 0.4rem; color: var(--white); }
@@ -209,27 +169,29 @@
   .card-for { font-size: 0.65rem; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1.2rem; }
   .card-for span { display: inline-block; border: 1px solid var(--border); padding: 0.2rem 0.55rem; margin: 0.2rem 0.15rem; color: rgba(245,245,240,0.5); }
 
+  /* ─── DYNAMIC INTERACTION STATES ─── */
+  .interactive-card { cursor: pointer; overflow: hidden; }
+  .rc-default { transition: opacity 0.2s ease; }
+  .rc-primed {
+    position: absolute; inset: 0; background: var(--white); display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease; padding: 2rem; z-index: 10;
+  }
+  .interactive-card.is-primed { background: var(--white); }
+  .interactive-card.is-primed .rc-default { opacity: 0; pointer-events: none; }
+  .interactive-card.is-primed .rc-primed { opacity: 1; pointer-events: auto; }
+
   /* ─── VIDEO PRICING LIST ─── */
   .video-rows {
-    display: flex; flex-direction: column; gap: 1px;
-    background: var(--border); border: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border);
     position: relative; z-index: 1; margin-top: 1rem;
   }
-  
-  /* Apply the same RGB border to the video list container */
-  .video-rows::before, .video-rows::after {
-    content: ''; position: absolute; inset: -1px; z-index: -1; pointer-events: none;
-    filter: url(#border-jiggle);
-  }
-  .video-rows::before { border: 1px solid rgba(255, 30, 30, 0.6); animation: rgbBreathe 4s infinite alternate ease-in-out; }
-  .video-rows::after { border: 1px solid rgba(30, 200, 255, 0.6); animation: rgbBreathe 3.5s infinite alternate-reverse ease-in-out; }
+  .video-rows::before, .video-rows::after { content: ''; position: absolute; inset: -1px; z-index: -1; pointer-events: none; filter: url(#border-jiggle); }
+  .video-rows::before { border: 1px solid rgba(255, 30, 30, 0.6); animation: rgbBreathe 13s infinite alternate ease-in-out; animation-delay: -8s; }
+  .video-rows::after { border: 1px solid rgba(30, 200, 255, 0.6); animation: rgbBreathe 17s infinite alternate-reverse ease-in-out; animation-delay: -12s; }
 
-  .video-row {
-    background: var(--black); display: grid; grid-template-columns: 1fr 1fr 1fr;
-    align-items: center; padding: 1.8rem 2.5rem; gap: 1rem; transition: background 0.2s;
-  }
+  .video-row { background: var(--black); display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; padding: 1.8rem 2.5rem; gap: 1rem; transition: background 0.2s; }
   .video-row:hover { background: rgba(255,255,255,0.03); }
-
   .video-row .vr-duration { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.06em; color: var(--white); }
   .video-row .vr-price { font-family: 'DM Mono', monospace; font-size: 1rem; color: var(--white); font-weight: 500; }
   .video-row .vr-note { font-size: 0.65rem; color: var(--dim); letter-spacing: 0.08em; text-align: right; }
@@ -237,17 +199,29 @@
   .video-includes { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
   .video-includes span { font-size: 0.65rem; letter-spacing: 0.1em; color: rgba(245,245,240,0.5); border: 1px solid var(--border); padding: 0.3rem 0.7rem; text-transform: uppercase; }
 
-  /* ─── REFRAME INTERACTION STATES ─── */
-  #reframe-card { overflow: hidden; cursor: pointer; }
-  .rc-default { transition: opacity 0.2s ease; }
-  .rc-primed {
-    position: absolute; inset: 0; background: var(--white); display: flex; flex-direction: column;
-    justify-content: center; align-items: center; text-align: center; opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease; padding: 2rem;
+  /* ─── POPUP CAROUSEL MODAL ─── */
+  #carousel-modal {
+    position: fixed; inset: 0; background: rgba(5,5,5,0.95); backdrop-filter: blur(10px);
+    z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
   }
-  #reframe-card.is-primed { background: var(--white); }
-  #reframe-card.is-primed .rc-default { opacity: 0; pointer-events: none; }
-  #reframe-card.is-primed .rc-primed { opacity: 1; pointer-events: auto; }
+  #carousel-modal.is-open { opacity: 1; pointer-events: auto; }
+  
+  .carousel-glitch { animation: modalGlitch 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; filter: url(#text-glitch); }
+  @keyframes modalGlitch { 0% { transform: scale(1.1) translateX(-10px); } 100% { transform: scale(1) translateX(0); } }
+
+  .carousel-content { position: relative; max-width: 90vw; max-height: 80vh; display: flex; align-items: center; justify-content: center; }
+  .carousel-img { max-width: 100%; max-height: 80vh; object-fit: contain; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; }
+  .carousel-img.active { display: block; animation: fadeslideup 0.4s ease; }
+
+  .carousel-controls { display: flex; gap: 1rem; margin-top: 2rem; }
+  .carousel-btn {
+    background: transparent; border: 1px solid var(--dim); color: var(--white);
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 0.8rem 1.5rem; cursor: pointer; transition: 0.2s;
+  }
+  .carousel-btn:hover { border-color: var(--white); background: rgba(255,255,255,0.05); }
+  .carousel-close { position: absolute; top: 2rem; right: 2rem; }
 
   /* ─── CONTACT & FOOTER ─── */
   #contact { text-align: center; padding-bottom: 8rem; }
@@ -275,17 +249,19 @@
 
 <svg style="width:0; height:0; position:absolute;" aria-hidden="true">
   <filter id="text-glitch">
-    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.1" numOctaves="1" result="warp">
-      <animate attributeName="baseFrequency" values="0.01 0.1; 0.02 0.4; 0.01 0.1" dur="5s" repeatCount="indefinite"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.1" numOctaves="1" result="warp" seed="2">
+      <animate attributeName="baseFrequency" values="0.01 0.1; 0.015 0.2; 0.005 0.15; 0.02 0.05; 0.01 0.1" dur="23s" repeatCount="indefinite"/>
     </feTurbulence>
     <feDisplacementMap in="SourceGraphic" in2="warp" scale="12" xChannelSelector="R" yChannelSelector="G" />
   </filter>
 
   <filter id="border-jiggle">
-    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise">
-      <animate attributeName="baseFrequency" values="0.04; 0.06; 0.04" dur="4s" repeatCount="indefinite"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise" seed="42">
+      <animate attributeName="baseFrequency" values="0.04; 0.05; 0.035; 0.055; 0.04" dur="28s" repeatCount="indefinite"/>
     </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G">
+       <animate attributeName="scale" values="4; 7; 3; 6; 4" dur="37s" repeatCount="indefinite"/>
+    </feDisplacementMap>
   </filter>
 </svg>
 
@@ -302,7 +278,9 @@
 </nav>
 
 <div id="hero">
-  <div id="iris-ring"></div>
+  <div id="iris-ring">
+    <div id="iris-spin-container"></div>
+  </div>
   
   <div class="hero-logo-wrap" id="parallax-logo">
     <img src="logo.png" alt="Unlimited Editing" class="base-logo">
@@ -329,19 +307,32 @@
   <p class="section-label reveal">What We Do</p>
   <h2 class="section-title reveal">Everything you need.<br>Nothing you don't.</h2>
   <div class="pricing-grid">
-    <div class="pricing-card reveal" style="transition-delay:0s">
-      <span class="card-tag">01</span>
-      <div class="card-title">Web Design</div>
-      <p style="font-size:0.78rem;color:var(--dim);line-height:1.8;margin-top:0.5rem;">Clean, modern landing pages and multi-section sites built to convert. No bloat, no templates.</p>
+    
+    <div class="pricing-card reveal" data-category="web" style="transition-delay:0s">
+      <div class="rc-default">
+        <span class="card-tag">01</span>
+        <div class="card-title">Web Design</div>
+        <p style="font-size:0.78rem;color:var(--dim);line-height:1.8;margin-top:0.5rem;">Clean, modern landing pages and multi-section sites built to convert. No bloat, no templates.</p>
+      </div>
+      <div class="rc-primed">
+        <div class="card-title" style="color:var(--black); margin-bottom: 0;">Web Design</div>
+        <p style="font-size:0.78rem; color:rgba(0,0,0,0.6); margin-top:0.5rem; letter-spacing:0.05em; text-transform:uppercase;">View Samples ↗</p>
+      </div>
     </div>
     
-    <div class="pricing-card reveal" style="transition-delay:0.1s">
-      <span class="card-tag">02</span>
-      <div class="card-title">Graphic Design</div>
-      <p style="font-size:0.78rem;color:var(--dim);line-height:1.8;margin-top:0.5rem;">Flyers, posters, and logos crafted with purpose. Print-ready or digital — both handled.</p>
+    <div class="pricing-card reveal" data-category="graphic" style="transition-delay:0.1s">
+      <div class="rc-default">
+        <span class="card-tag">02</span>
+        <div class="card-title">Graphic Design</div>
+        <p style="font-size:0.78rem;color:var(--dim);line-height:1.8;margin-top:0.5rem;">Flyers, posters, and logos crafted with purpose. Print-ready or digital — both handled.</p>
+      </div>
+      <div class="rc-primed">
+        <div class="card-title" style="color:var(--black); margin-bottom: 0;">Graphic Design</div>
+        <p style="font-size:0.78rem; color:rgba(0,0,0,0.6); margin-top:0.5rem; letter-spacing:0.05em; text-transform:uppercase;">View Samples ↗</p>
+      </div>
     </div>
     
-    <div class="pricing-card reveal" id="reframe-card" style="transition-delay:0.2s;">
+    <div class="pricing-card interactive-card reveal" id="reframe-card" style="transition-delay:0.2s;">
       <div class="rc-default">
         <span class="card-tag">03</span>
         <div class="card-title">Reframe</div>
@@ -362,65 +353,92 @@
   <h2 class="section-title reveal">What it costs.</h2>
 
   <div class="pricing-grid">
-    <div class="pricing-card reveal">
-      <span class="card-tag">Landing Page</span>
-      <div class="card-price">R1 000</div>
-      <div class="card-price-note">+ R200 per additional section</div>
-      <ul class="card-includes">
-        <li>Clean, modern layout</li>
-        <li>Structured content formatting</li>
-        <li>Basic branding alignment</li>
-      </ul>
-      <div class="card-for">Best for<br><span>Creators</span> <span>Small Biz</span></div>
+    <div class="pricing-card reveal" data-category="web">
+      <div class="rc-default">
+        <span class="card-tag">Landing Page</span>
+        <div class="card-price">R1 000</div>
+        <div class="card-price-note">+ R200 per additional section</div>
+        <ul class="card-includes">
+          <li>Clean, modern layout</li>
+          <li>Structured content formatting</li>
+          <li>Basic branding alignment</li>
+        </ul>
+        <div class="card-for">Best for<br><span>Creators</span> <span>Small Biz</span></div>
+      </div>
+      <div class="rc-primed">
+        <div class="card-title" style="color:var(--black); margin-bottom: 0;">Landing Pages</div>
+        <p style="font-size:0.78rem; color:rgba(0,0,0,0.6); margin-top:0.5rem; letter-spacing:0.05em; text-transform:uppercase;">View Samples ↗</p>
+      </div>
     </div>
 
-    <div class="pricing-card reveal" style="transition-delay:0.1s">
-      <span class="card-tag">Flyers / Posters</span>
-      <div class="card-price">R300</div>
-      <div class="card-price-note">Includes 2 revisions · R100/additional revision</div>
-      <ul class="card-includes">
-        <li>Text layout & visual hierarchy</li>
-        <li>Brand alignment</li>
-        <li>Print-ready or digital format</li>
-      </ul>
+    <div class="pricing-card reveal" data-category="graphic" style="transition-delay:0.1s">
+      <div class="rc-default">
+        <span class="card-tag">Flyers / Posters</span>
+        <div class="card-price">R300</div>
+        <div class="card-price-note">Includes 2 revisions · R100/additional revision</div>
+        <ul class="card-includes">
+          <li>Text layout & visual hierarchy</li>
+          <li>Brand alignment</li>
+          <li>Print-ready or digital format</li>
+        </ul>
+      </div>
+      <div class="rc-primed">
+        <div class="card-title" style="color:var(--black); margin-bottom: 0;">Flyers / Posters</div>
+        <p style="font-size:0.78rem; color:rgba(0,0,0,0.6); margin-top:0.5rem; letter-spacing:0.05em; text-transform:uppercase;">View Samples ↗</p>
+      </div>
     </div>
 
-    <div class="pricing-card reveal" style="transition-delay:0.2s">
-      <span class="card-tag">Logo Design</span>
-      <div class="card-price">R800</div>
-      <div class="card-price-note">3 concept options · 2 revision rounds</div>
-      <ul class="card-includes">
-        <li>3 logo variations</li>
-        <li>Brand direction alignment</li>
-        <li>Print-ready exports</li>
-      </ul>
-      <div class="card-for">Best for<br><span>Startups</span> <span>Personal Brands</span></div>
+    <div class="pricing-card reveal" data-category="logo" style="transition-delay:0.2s">
+      <div class="rc-default">
+        <span class="card-tag">Logo Design</span>
+        <div class="card-price">R800</div>
+        <div class="card-price-note">3 concept options · 2 revision rounds</div>
+        <ul class="card-includes">
+          <li>3 logo variations</li>
+          <li>Brand direction alignment</li>
+          <li>Print-ready exports</li>
+        </ul>
+        <div class="card-for">Best for<br><span>Startups</span> <span>Personal Brands</span></div>
+      </div>
+      <div class="rc-primed">
+        <div class="card-title" style="color:var(--black); margin-bottom: 0;">Logo Design</div>
+        <p style="font-size:0.78rem; color:rgba(0,0,0,0.6); margin-top:0.5rem; letter-spacing:0.05em; text-transform:uppercase;">View Samples ↗</p>
+      </div>
     </div>
   </div>
 
   <p class="section-label reveal" style="margin-bottom:1rem;margin-top:4rem;">Video Ads</p>
-  <div class="video-rows reveal">
-    <div class="video-row">
-      <span class="vr-duration">10 SEC</span>
-      <span class="vr-price">R1 000</span>
-      <span class="vr-note">Social / Product / Brand</span>
+  
+  <div class="video-rows interactive-container reveal" data-category="video" style="cursor: pointer; position: relative;">
+    <div class="rc-default" style="pointer-events: none;">
+      <div class="video-row">
+        <span class="vr-duration">10 SEC</span>
+        <span class="vr-price">R1 000</span>
+        <span class="vr-note">Social / Product / Brand</span>
+      </div>
+      <div class="video-row">
+        <span class="vr-duration">15 SEC</span>
+        <span class="vr-price">R1 350</span>
+        <span class="vr-note">Social / Product / Brand</span>
+      </div>
+      <div class="video-row">
+        <span class="vr-duration">20 SEC</span>
+        <span class="vr-price">R1 800</span>
+        <span class="vr-note">Social / Product / Brand</span>
+      </div>
+      <div class="video-row" style="background:rgba(255,255,255,0.02);">
+        <span class="vr-duration">30 SEC</span>
+        <span class="vr-price">R2 500</span>
+        <span class="vr-note" style="color:var(--white);">+ Custom Jingle</span>
+      </div>
     </div>
-    <div class="video-row">
-      <span class="vr-duration">15 SEC</span>
-      <span class="vr-price">R1 350</span>
-      <span class="vr-note">Social / Product / Brand</span>
-    </div>
-    <div class="video-row">
-      <span class="vr-duration">20 SEC</span>
-      <span class="vr-price">R1 800</span>
-      <span class="vr-note">Social / Product / Brand</span>
-    </div>
-    <div class="video-row" style="background:rgba(255,255,255,0.02);">
-      <span class="vr-duration">30 SEC</span>
-      <span class="vr-price">R2 500</span>
-      <span class="vr-note" style="color:var(--white);">+ Custom Jingle</span>
+    
+    <div class="rc-primed" style="position: absolute; inset: 0; background: var(--white); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.2s;">
+      <div class="card-title" style="color:var(--black); margin-bottom: 0;">Video Ads</div>
+      <p style="font-size:0.78rem; color:rgba(0,0,0,0.6); margin-top:0.5rem; letter-spacing:0.05em; text-transform:uppercase;">View Samples ↗</p>
     </div>
   </div>
+
   <div class="video-includes reveal">
     <span>30-min Consultation</span>
     <span>Script Planning</span>
@@ -454,123 +472,222 @@
   </div>
 </footer>
 
-<script>
-  // 1. Generate the Iris Lines with alternating sizes and chained animations
-  const ring = document.getElementById('iris-ring');
-  const numLines = 45; 
+<div id="carousel-modal">
+  <button class="carousel-btn carousel-close" id="close-carousel">Close ✕</button>
+  <div class="carousel-content" id="carousel-track"></div>
+  <div class="carousel-controls">
+    <button class="carousel-btn" id="prev-btn">← Prev</button>
+    <button class="carousel-btn" id="next-btn">Next →</button>
+  </div>
+</div>
 
+<script>
+  // ─── 1. DYNAMIC IRIS LOADING BAR ───
+  const spinContainer = document.getElementById('iris-spin-container');
+  const numLines = 45; 
   for (let i = 0; i < numLines; i++) {
     const line = document.createElement('div');
     line.className = 'iris-line';
     const angle = (i * (360 / numLines));
-    const delay = 0.3 + (i * 0.012);
     
-    const breatheScale = (i % 2 === 0) ? '0.6' : '1.3';
+    // Create a smooth, sharp mathematical peak for the "loading tail"
+    const peak = Math.pow(Math.sin((i / numLines) * Math.PI), 6);
+    const finalScale = 1 + (peak * 2.2); 
+    
+    // Sequential delay creates the collapsing tornado effect while spinning
+    const delay = 0.2 + (i * 0.015); 
     
     line.style.setProperty('--rot', `${angle}deg`);
-    line.style.setProperty('--breathe-scale', breatheScale);
+    line.style.setProperty('--final-scale', finalScale);
     
-    line.style.animation = `
-      popLine 0.9s ${delay}s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
-      breatheLine 4s ${delay + 0.9}s infinite alternate ease-in-out
-    `;
-    ring.appendChild(line);
+    // Static animation state, rotation handled by the parent container
+    line.style.animation = `popLine 0.9s ${delay}s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards`;
+    spinContainer.appendChild(line);
   }
 
-  // 2. Glitch Text Observer
+  // ─── 2. GLITCH TEXT OBSERVER ───
   const chromaElements = document.querySelectorAll('.chroma');
   const chromaObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        e.target.classList.add('glitch-in');
-        e.target.classList.remove('glitch-out');
+        e.target.classList.add('glitch-in'); e.target.classList.remove('glitch-out');
       } else {
-        e.target.classList.add('glitch-out');
-        e.target.classList.remove('glitch-in');
+        e.target.classList.add('glitch-out'); e.target.classList.remove('glitch-in');
       }
     });
   }, { threshold: 0.2, rootMargin: "0px 0px -10% 0px" });
   chromaElements.forEach(el => chromaObserver.observe(el));
 
-  // 3. Scroll reveal for standard sections
+  // ─── 3. SCROLL REVEAL ───
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
     });
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
-  // 4. Subtle cursor chromatic trail
+  // ─── 4. CURSOR CHROMATIC TRAIL ───
   document.addEventListener('mousemove', (e) => {
-    const x = e.clientX / window.innerWidth;
-    const y = e.clientY / window.innerHeight;
-    document.documentElement.style.setProperty('--mx', x);
-    document.documentElement.style.setProperty('--my', y);
+    document.documentElement.style.setProperty('--mx', e.clientX / window.innerWidth);
+    document.documentElement.style.setProperty('--my', e.clientY / window.innerHeight);
   });
 
-  // 5. REFRAME CARD INTENT CONFIRMATION
-  const reframeCard = document.getElementById('reframe-card');
-  let isReframePrimed = false;
-  let reframePrimedScrollY = 0;
+  // ─── 5. DYNAMIC FILE PROBER & CAROUSEL LOGIC ───
+  const availableSamples = { web: [], graphic: [], logo: [], video: [] };
+  
+  Object.keys(availableSamples).forEach(category => {
+    let index = 1;
+    function checkNext() {
+      if (index > 10) return; 
+      const img = new Image();
+      const src = `${category}-${index}.jpg`;
+      img.onload = () => {
+        availableSamples[category].push(src);
+        document.querySelectorAll(`[data-category="${category}"]`).forEach(card => {
+          card.classList.add('interactive-card');
+        });
+        index++;
+        checkNext();
+      };
+      img.onerror = () => {};
+      img.src = src;
+    }
+    checkNext();
+  });
 
-  if (reframeCard) {
-    reframeCard.addEventListener('click', (e) => {
-      e.preventDefault();
+  let activePrimedCard = null;
+  let primedScrollY = 0;
+  
+  const modal = document.getElementById('carousel-modal');
+  const track = document.getElementById('carousel-track');
+  let currentImages = [];
+  let currentIndex = 0;
+  let isModalOpen = false;
+  let modalScrollY = 0;
 
-      if (!isReframePrimed) {
-        // First tap
-        isReframePrimed = true;
-        reframePrimedScrollY = window.scrollY;
-        reframeCard.classList.add('is-primed');
-        
-        reframeCard.classList.add('glitch-flash');
-        setTimeout(() => reframeCard.classList.remove('glitch-flash'), 150);
-      } else {
-        // Second tap
-        window.open('https://unlimitedediting.github.io/', '_blank');
-        isReframePrimed = false;
-        reframeCard.classList.remove('is-primed');
-      }
+  function openCarousel(category) {
+    currentImages = availableSamples[category];
+    if (!currentImages || currentImages.length === 0) return;
+    
+    currentIndex = 0;
+    track.innerHTML = ''; 
+    
+    currentImages.forEach((src, i) => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = `carousel-img ${i === 0 ? 'active' : ''}`;
+      track.appendChild(img);
     });
+
+    isModalOpen = true;
+    modalScrollY = window.scrollY;
+    
+    modal.classList.add('is-open', 'carousel-glitch');
+    setTimeout(() => modal.classList.remove('carousel-glitch'), 300);
   }
 
-  // 6. Scroll Physics & State Checks
+  function closeCarousel() {
+    isModalOpen = false;
+    modal.classList.add('carousel-glitch');
+    setTimeout(() => {
+      modal.classList.remove('is-open', 'carousel-glitch');
+      track.innerHTML = '';
+    }, 250); 
+  }
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    const imgs = track.querySelectorAll('.carousel-img');
+    imgs[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex + 1) % imgs.length;
+    imgs[currentIndex].classList.add('active');
+  });
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    const imgs = track.querySelectorAll('.carousel-img');
+    imgs[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+    imgs[currentIndex].classList.add('active');
+  });
+
+  document.getElementById('close-carousel').addEventListener('click', closeCarousel);
+
+  document.querySelectorAll('.pricing-card, .interactive-container').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const targetElement = card;
+
+      if (card.id === 'reframe-card') {
+        e.preventDefault();
+        if (activePrimedCard !== card) {
+          primeCard(card);
+        } else {
+          window.open('https://unlimitedediting.github.io/', '_blank');
+          resetPrimedCard();
+        }
+        return;
+      }
+
+      if (card.classList.contains('interactive-card')) {
+        const category = card.getAttribute('data-category');
+        if (activePrimedCard !== card) {
+          primeCard(targetElement);
+        } else {
+          openCarousel(category);
+          resetPrimedCard();
+        }
+      }
+    });
+  });
+
+  function primeCard(card) {
+    if (activePrimedCard) resetPrimedCard(); 
+    activePrimedCard = card;
+    primedScrollY = window.scrollY;
+    card.classList.add('is-primed', 'glitch-flash');
+    setTimeout(() => card.classList.remove('glitch-flash'), 150);
+    
+    if (card.classList.contains('interactive-container')) {
+       card.querySelector('.rc-default').style.opacity = '0';
+       card.querySelector('.rc-primed').style.opacity = '1';
+       card.querySelector('.rc-primed').style.pointerEvents = 'auto';
+    }
+  }
+
+  function resetPrimedCard() {
+    if (activePrimedCard) {
+      activePrimedCard.classList.remove('is-primed');
+      
+      if (activePrimedCard.classList.contains('interactive-container')) {
+         activePrimedCard.querySelector('.rc-default').style.opacity = '1';
+         activePrimedCard.querySelector('.rc-primed').style.opacity = '0';
+         activePrimedCard.querySelector('.rc-primed').style.pointerEvents = 'none';
+      }
+
+      activePrimedCard.classList.add('glitch-flash');
+      setTimeout(() => activePrimedCard.classList.remove('glitch-flash'), 150);
+      activePrimedCard = null;
+    }
+  }
+
+  // ─── 6. SCROLL PHYSICS & STATE CHECKS ───
   window.addEventListener('scroll', () => {
     const scrolled = window.scrollY;
 
-    // Revert Reframe card if scrolled away
-    if (isReframePrimed && Math.abs(scrolled - reframePrimedScrollY) > 50) {
-      isReframePrimed = false;
-      reframeCard.classList.remove('is-primed');
-      
-      reframeCard.classList.add('glitch-flash');
-      setTimeout(() => reframeCard.classList.remove('glitch-flash'), 150);
-    }
-    
-    // Hero animations (only when near top)
+    if (activePrimedCard && Math.abs(scrolled - primedScrollY) > 50) { resetPrimedCard(); }
+    if (isModalOpen && Math.abs(scrolled - modalScrollY) > 200) { closeCarousel(); }
+
     if (scrolled < window.innerHeight) {
+      const ring = document.getElementById('iris-ring');
       if (ring) {
-        const scale = 1 + (scrolled * 0.015);
-        const opacity = 1 - (scrolled * 0.002);
-        ring.style.transform = `scale(${scale})`;
-        ring.style.opacity = Math.max(0, opacity);
+        ring.style.transform = `scale(${1 + (scrolled * 0.015)})`;
+        ring.style.opacity = Math.max(0, 1 - (scrolled * 0.002));
       }
       
       const sheenBar = document.querySelector('.sheen-bar');
       const baseLogo = document.querySelector('.base-logo');
       
-      if (sheenBar) {
-        const move = (scrolled * 0.4) - 50; 
-        sheenBar.style.transform = `skewX(-25deg) translateX(${move}%)`;
-      }
-      
-      if (baseLogo) {
-        baseLogo.style.transform = `translateY(${scrolled * 0.1}px) scale(${1 - scrolled * 0.0005})`;
-      }
+      if (sheenBar) sheenBar.style.transform = `skewX(-25deg) translateX(${(scrolled * 0.4) - 50}%)`;
+      if (baseLogo) baseLogo.style.transform = `translateY(${scrolled * 0.1}px) scale(${1 - scrolled * 0.0005})`;
     }
   });
 </script>
